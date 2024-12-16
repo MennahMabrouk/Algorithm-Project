@@ -17,7 +17,8 @@ def pso_fitness(params, sequences):
     seq1 = sequences[seq1_idx]
     seq2 = sequences[seq2_idx]
 
-    score = smith_waterman(seq1, seq2)
+    # Call smith_waterman which returns (score, aligned_seq1, aligned_seq2)
+    score, _, _ = smith_waterman(seq1, seq2)
     return -score  # Negate score because PSO minimizes by default
 
 

@@ -2,7 +2,6 @@ import numpy as np
 from Algorithms.smith_waterman import smith_waterman
 import random
 
-
 def flat_algorithm(sequence1, sequence2, fragment_length, max_iterations=10):
     """
     Fragmented Local Aligner Technique (FLAT) with exploration and exploitation.
@@ -16,6 +15,8 @@ def flat_algorithm(sequence1, sequence2, fragment_length, max_iterations=10):
     Returns:
         best_score (int): The highest LCCS score found.
         best_fragments (tuple): Start positions of the best aligned fragments.
+        aligned_seq1 (str): Aligned sequence1.
+        aligned_seq2 (str): Aligned sequence2.
     """
 
     def random_exploration_method(len_seq1, len_seq2, method):
@@ -43,6 +44,7 @@ def flat_algorithm(sequence1, sequence2, fragment_length, max_iterations=10):
     len_seq1, len_seq2 = len(sequence1), len(sequence2)
     best_score = 0
     best_fragments = None
+    aligned_seq1, aligned_seq2 = "", ""
 
     for _ in range(max_iterations):
         # Randomly select exploration strategy
@@ -54,9 +56,10 @@ def flat_algorithm(sequence1, sequence2, fragment_length, max_iterations=10):
         fragment2 = sequence2[p2:p2 + fragment_length]
 
         # Exploitation Phase: Evaluate Smith-Waterman score
-        score = smith_waterman(fragment1, fragment2)
+        score, aligned_fragment1, aligned_fragment2 = smith_waterman(fragment1, fragment2)
         if score > best_score:
             best_score = score
             best_fragments = (p1, p2)
+            aligned_seq1, aligned_seq2 = aligned_fragment1, aligned_fragment2
 
-    return best_score, best_fragments
+    return best_score, best_fragments, aligned_seq1, aligned_seq2

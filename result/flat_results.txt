@@ -1,3 +1,7 @@
 FLAT Alignment Results:
-Best Score: 12.0
-Fragments aligned: Sequence1[372:422] and Sequence2[402:452]
+Best Score: 8.0
+Fragments aligned: Sequence1[0:50] and Sequence2[0:50]
+
+Best Alignment Strand:
+Sequence 1: ASGEANLKPENVEIHI
+Sequence 2: AIGPLNLYP-MV--HI

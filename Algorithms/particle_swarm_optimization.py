@@ -66,6 +66,10 @@ def pso_algorithm(sequences, num_particles=30, num_iterations=50, w=0.9, c1=1.5,
     gbest_position = pbest_positions[np.argmin(pbest_scores)]  # Global best
     gbest_score = np.min(pbest_scores)  # Best score
 
+    # To track if the same solution is found in consecutive iterations
+    same_solution_counter = 0
+    last_best_pair = None
+
     # Main PSO loop
     for iteration in range(num_iterations):
         for i in range(num_particles):
@@ -103,21 +107,30 @@ def pso_algorithm(sequences, num_particles=30, num_iterations=50, w=0.9, c1=1.5,
             gbest_score = pbest_scores[min_score_idx]
             gbest_position = pbest_positions[min_score_idx]
 
-        # Print the best score and corresponding pair at each iteration
+        # Track the best pair (sequences)
         best_seq1_idx, best_seq2_idx = int(gbest_position[0]), int(gbest_position[1])
+        best_pair = (best_seq1_idx, best_seq2_idx)
+
+        # Check if the same solution has been found for 3 consecutive iterations
+        if best_pair == last_best_pair:
+            same_solution_counter += 1
+        else:
+            last_best_pair = best_pair
+            same_solution_counter = 0
+
+        # If the same solution is found for 3 iterations, reset particles' positions to encourage exploration
+        if same_solution_counter >= 3:
+            print(f"Same solution found for 3 consecutive iterations, applying random reset.")
+            for j in range(num_particles):
+                new_pos = np.random.randint(0, num_sequences, 2)
+                while new_pos[0] == new_pos[1]:  # Prevent self-alignment
+                    new_pos = np.random.randint(0, num_sequences, 2)
+                positions[j] = new_pos
+                pbest_positions[j] = new_pos  # Reset personal best for this particle
+
+        # Print the best score and corresponding pair at each iteration
         print(f"Iteration {iteration + 1}: Best score = {gbest_score}, "
               f"Best pair: seq {best_seq1_idx + 1} and seq {best_seq2_idx + 1}")
-
-        # Random exploration check
-        if iteration % 5 == 0:
-            # Apply additional randomness to the position to enforce better exploration
-            for j in range(num_particles):
-                if random.random() < 0.3:  # 30% chance to reset position for further exploration
-                    new_pos = np.random.randint(0, num_sequences, 2)
-                    while new_pos[0] == new_pos[1]:  # Prevent self-alignment
-                        new_pos = np.random.randint(0, num_sequences, 2)
-                    positions[j] = new_pos
-                    pbest_positions[j] = new_pos  # Reset personal best for this particle
 
     # Return the best result
     best_seq1_idx, best_seq2_idx = int(gbest_position[0]), int(gbest_position[1])

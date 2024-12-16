@@ -22,6 +22,11 @@ def pso_fitness(params, sequences):
         float: Negative Smith-Waterman score since PSO minimizes by default.
     """
     seq1_idx, seq2_idx = int(params[0]), int(params[1])
+
+    # Prevent self-alignment: If both indices are the same, return a very high value to penalize this case
+    if seq1_idx == seq2_idx:
+        return float('inf')  # Penalize self-alignment by assigning an infinitely bad score
+
     seq1 = sequences[seq1_idx]
     seq2 = sequences[seq2_idx]
 
@@ -78,6 +83,11 @@ def pso_algorithm(sequences, num_particles=30, num_iterations=50, w=0.9, c1=1.5,
 
             # Ensuring positions remain within bounds
             positions[i] = np.clip(positions[i], 0, num_sequences - 1)
+
+            # Ensure no self-alignment happens
+            if positions[i][0] == positions[i][1]:
+                positions[i][1] = (positions[i][
+                                       1] + 1) % num_sequences  # Change seq2 to a different one if seq1 == seq2
 
             # Evaluate fitness (alignment score)
             score = pso_fitness(positions[i], sequences)

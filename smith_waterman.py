@@ -52,7 +52,7 @@ def smith_waterman(seq1, seq2):
 
 
 # Read sequences from the FASTA file
-fasta_path = '/kaggle/input/receptors/sequence.fasta'
+fasta_path = 'Dataset/sequence.fasta'
 sequences = []
 
 # Parse the FASTA file
@@ -60,7 +60,7 @@ for record in SeqIO.parse(fasta_path, "fasta"):
     sequences.append(str(record.seq))
 
 # Open a file to save the output
-output_file = 'alignment_results.txt'
+output_file = 'sw_alignment_results.txt'
 
 with open(output_file, 'w') as f:
     # Perform pairwise alignment for all sequences (just an example with first 3)
@@ -80,4 +80,4 @@ with open(output_file, 'w') as f:
             f.write(f"{aligned_seq2}\n")
             f.write("-" * 50 + "\n")
 
-print("Alignment results have been saved to 'alignment_results.txt'")
+print("Alignment results have been saved to 'sw_alignment_results.txt'")

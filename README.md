@@ -118,15 +118,8 @@ $ y_{\text{gbest}} : Global \ best \ solution \ across \ all \ particles. $
 - Mohamed Issa et al., "ASCA-PSO: Adaptive sine cosine optimization algorithm integrated with particle swarm for pairwise local sequence alignment," *Expert Systems With Applications*, 2018.
 
 ## **Dependencies**
-
-To run the algorithms in this repository, the following libraries need to be installed:
-
-1. **NumPy**: For numerical operations.  
-2. **Biopython**: For parsing and handling biological sequences (e.g., FASTA files).  
-3. **Matplotlib** *(optional)*: For visualizing results, if needed.  
-
 You can install the required libraries using `pip`:
 
 ```bash
-pip install numpy biopython matplotlib pyswarm
+pip install numpy biopython matplotlib pyswarm scipy fpdf pandas
 

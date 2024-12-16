@@ -1,6 +1,6 @@
 import numpy as np
 from pyswarm import pso
-from smith_waterman import smith_waterman
+from Algorithms.smith_waterman import smith_waterman
 
 def pso_fitness(params, sequences):
     """

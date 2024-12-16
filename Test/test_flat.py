@@ -1,5 +1,5 @@
 from Bio import SeqIO
-from Algorithms/flat import flat_algorithm
+from Algorithms.flat import flat_algorithm
 
 fasta_path = 'Dataset/sequence.fasta'
 sequences = [str(record.seq) for record in SeqIO.parse(fasta_path, "fasta")]

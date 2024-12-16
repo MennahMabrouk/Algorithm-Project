@@ -1,5 +1,5 @@
 import numpy as np
-from smith_waterman import smith_waterman
+from Algorithms.smith_waterman import smith_waterman
 import random
 
 

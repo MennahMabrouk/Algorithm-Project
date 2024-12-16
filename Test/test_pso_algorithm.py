@@ -1,6 +1,6 @@
 from Bio import SeqIO
-from pso_algorithm import pso_algorithm
-from smith_waterman import smith_waterman
+from Algorithms.particle_swarm_optimization import pso_algorithm
+from Algorithms.smith_waterman import smith_waterman
 
 fasta_path = 'Dataset/sequence.fasta'
 sequences = [str(record.seq) for record in SeqIO.parse(fasta_path, "fasta")]

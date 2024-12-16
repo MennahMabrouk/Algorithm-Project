@@ -1,6 +1,6 @@
 import numpy as np
 from Bio import SeqIO
-from smith_waterman import smith_waterman  # Import Smith-Waterman from smith_waterman.py
+from Algorithms.smith_waterman import smith_waterman
 
 # ASCA-PSO for sequence alignment
 def asca_pso(sequences, num_particles=5, num_search_agents=10, num_iterations=20):

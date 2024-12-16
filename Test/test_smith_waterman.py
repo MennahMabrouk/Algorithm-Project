@@ -1,5 +1,5 @@
 from Bio import SeqIO
-from smith_waterman import smith_waterman
+from Algorithms.smith_waterman import smith_waterman
 
 # Load sequences from the FASTA file
 fasta_path = 'Dataset/sequence.fasta'

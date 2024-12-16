@@ -78,7 +78,17 @@ def asca_pso(sequences, num_particles=5, num_search_agents=10, num_iterations=20
         # Clip positions
         y = np.clip(y, 0, num_sequences - 1)
 
-    return y_gbest, smith_waterman(sequences[int(y_gbest[0])], sequences[int(y_gbest[1])])
+    # Ensure indices are clipped and converted to integers
+    y_gbest = np.clip(y_gbest, 0, len(sequences) - 1).astype(int)
+    seq1_idx, seq2_idx = int(y_gbest[0]), int(y_gbest[1])
+
+    # Validate indices before calling Smith-Waterman
+    if seq1_idx < len(sequences) and seq2_idx < len(sequences):
+        best_score = smith_waterman(sequences[seq1_idx], sequences[seq2_idx])
+        return y_gbest, best_score
+    else:
+        raise ValueError("Invalid sequence indices detected in y_gbest.")
+
 
 # Read sequences from FASTA file
 fasta_path = 'Dataset/sequence.fasta'

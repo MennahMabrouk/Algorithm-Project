@@ -1,0 +1,3 @@
+FLAT Alignment Results:
+Best Score: 12.0
+Fragments aligned: Sequence1[372:422] and Sequence2[402:452]

@@ -117,6 +117,36 @@ $ y_{\text{gbest}} : Global \ best \ solution \ across \ all \ particles. $
 
 - Mohamed Issa et al., "ASCA-PSO: Adaptive sine cosine optimization algorithm integrated with particle swarm for pairwise local sequence alignment," *Expert Systems With Applications*, 2018.
 
+---
+
+### 5. **FLAT Algorithm**
+
+The **Fragmented Local Alignment Technique (FLAT)** is designed to detect the **Longest Common Consecutive Subsequence (LCCS)** between two sequences. It works by fragmenting sequences into smaller subsequences of size \( L \) and performing local alignment using techniques like the **Smith-Waterman** algorithm.
+
+At each iteration, FLAT compares all possible fragments of length \( L \) in two sequences \( \text{SeqA} \) and \( \text{SeqB} \):
+
+$$
+\text{Score}(i, j) = \max_{1 \leq k \leq L} \left( \text{Smith-Waterman}(\text{SeqA}[i:i+L], \text{SeqB}[j:j+L]) \right)
+$$
+
+Where:
+
+- $ \text{SeqA}[i:i+L] \ is \ the \ fragment \ of \ length \ L \ starting \ at \ position \ i \ in \ sequence \text{SeqA} . $
+- $ \text{SeqB}[j:j+L] \ is \ the \ fragment \ of \ length \ L \ starting \ at \ position \ j \ in \ sequence \text{SeqB}. $
+- $ \text{Smith-Waterman}(x, y) \ calculates \ the \ local \ alignment \ score \ between \ fragments \ x \ and \ y. $
+
+The FLAT algorithm iterates over all possible starting positions \( i \) and \( j \) in the sequences:
+
+$$
+\text{Best Score} = \max_{i, j} \left( \text{Score}(i, j) \right)
+$$
+
+Where:
+- $ \ i \ in \ [0, |\text{SeqA}| - L] \ and \ j \in [0, |\text{SeqB}| - L] . $
+
+
+---
+
 ## **Dependencies**
 You can install the required libraries using `pip`:
 

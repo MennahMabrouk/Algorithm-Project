@@ -1,14 +1,23 @@
 import numpy as np
-from Bio import SeqIO
 
 # Define the scoring system
 MATCH = 2  # Score for a match
 MISMATCH = -1  # Score for a mismatch
 GAP = -1  # Penalty for a gap
 
-
-# Function to calculate the Smith-Waterman matrix
 def smith_waterman(seq1, seq2):
+    """
+    Perform local alignment of two sequences using the Smith-Waterman algorithm.
+
+    Args:
+        seq1 (str): The first sequence.
+        seq2 (str): The second sequence.
+
+    Returns:
+        max_score (int): The maximum alignment score.
+        align1 (str): The aligned representation of seq1.
+        align2 (str): The aligned representation of seq2.
+    """
     # Create a matrix with dimensions (len(seq1)+1) x (len(seq2)+1)
     len_seq1, len_seq2 = len(seq1), len(seq2)
     matrix = np.zeros((len_seq1 + 1, len_seq2 + 1))
@@ -49,35 +58,3 @@ def smith_waterman(seq1, seq2):
             j -= 1
 
     return max_score, align1, align2
-
-
-# Read sequences from the FASTA file
-fasta_path = 'Dataset/sequence.fasta'
-sequences = []
-
-# Parse the FASTA file
-for record in SeqIO.parse(fasta_path, "fasta"):
-    sequences.append(str(record.seq))
-
-# Open a file to save the output
-output_file = 'sw_alignment_results.txt'
-
-with open(output_file, 'w') as f:
-    # Perform pairwise alignment for all sequences (just an example with first 3)
-    for i in range(len(sequences)):
-        for j in range(i + 1, len(sequences)):
-            seq1 = sequences[i]
-            seq2 = sequences[j]
-
-            # Perform Smith-Waterman alignment
-            score, aligned_seq1, aligned_seq2 = smith_waterman(seq1, seq2)
-
-            # Write the results to the file
-            f.write(f"Alignment between sequence {i + 1} and sequence {j + 1}:\n")
-            f.write(f"Max score: {score}\n")
-            f.write(f"Aligned sequences:\n")
-            f.write(f"{aligned_seq1}\n")
-            f.write(f"{aligned_seq2}\n")
-            f.write("-" * 50 + "\n")
-
-print("Alignment results have been saved to 'sw_alignment_results.txt'")

@@ -1,0 +1,256 @@
+Alignment between sequence 1 and sequence 2:
+Max score: 12.0
+Aligned sequences:
+VYCVKARALIENDRRNKGSSV
+V-CV--RAL-E-D--DKDSEV
+--------------------------------------------------
+Alignment between sequence 1 and sequence 3:
+Max score: 12.0
+Aligned sequences:
+VYCVKARALIENDRRNKGSSV
+V-CV--RAL-E-D--DKDSEV
+--------------------------------------------------
+Alignment between sequence 1 and sequence 4:
+Max score: 12.0
+Aligned sequences:
+PREVSSRGIYYVRVR
+PSEVSS-FSYHV-VR
+--------------------------------------------------
+Alignment between sequence 1 and sequence 5:
+Max score: 11.0
+Aligned sequences:
+EIEETDE
+EIEEVDE
+--------------------------------------------------
+Alignment between sequence 1 and sequence 6:
+Max score: 9.0
+Aligned sequences:
+VGTCTALFS
+VIT-YALFS
+--------------------------------------------------
+Alignment between sequence 1 and sequence 7:
+Max score: 11.0
+Aligned sequences:
+LLGA-TTLML
+LLVAVTTLSL
+--------------------------------------------------
+Alignment between sequence 1 and sequence 8:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 9:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D-I-W
+--------------------------------------------------
+Alignment between sequence 1 and sequence 10:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 11:
+Max score: 11.0
+Aligned sequences:
+RWV-LPA---ASGEANLKPE---NV
+R-VSLLAIKLFSEEA-LPPEARSNV
+--------------------------------------------------
+Alignment between sequence 1 and sequence 12:
+Max score: 11.0
+Aligned sequences:
+SESVKNVTFSA-DYQILG-TDN
+STSGGN-T-SALD--IGGPTYN
+--------------------------------------------------
+Alignment between sequence 1 and sequence 13:
+Max score: 11.0
+Aligned sequences:
+RALIEN-DRRNKGSSV
+R-LIMNID-RNLVSLV
+--------------------------------------------------
+Alignment between sequence 1 and sequence 14:
+Max score: 17.0
+Aligned sequences:
+QPLRNLLLSTSE-E--Q--TERCF-IIENAS-II
+QPL-NLLKSFSEGESSQLNTDSSFCKI---STII
+--------------------------------------------------
+Alignment between sequence 1 and sequence 15:
+Max score: 14.0
+Aligned sequences:
+L-MLV-AGR-WVLPAASGEA--NLK-PE
+LVMLVLYGRIFVL--ASRMAISHHKPPE
+--------------------------------------------------
+Alignment between sequence 1 and sequence 16:
+Max score: 11.0
+Aligned sequences:
+A-L--LGAT-TLMLVAG-R-WVLPAASGEAN
+AGLFSLNSTSTAFL-HGSREW--PALSAKAN
+--------------------------------------------------
+Alignment between sequence 1 and sequence 17:
+Max score: 11.0
+Aligned sequences:
+EA-QIGP-PDVHLEA-E-DKAIILSISPPG-TKD
+EALQ-VPAPATH--ASEWDK---MS-S--GVT-D
+--------------------------------------------------
+Alignment between sequence 1 and sequence 18:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 19:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 20:
+Max score: 13.0
+Aligned sequences:
+M-LALLG-A-TTLML-VAGRWVL
+MSLGLLGKASGGLALFAAG-IVL
+--------------------------------------------------
+Alignment between sequence 1 and sequence 21:
+Max score: 18.0
+Aligned sequences:
+EA-QIGPPDVHLEAE-DKAIILSISPPG-TKDSIMW
+EALSIPPPATHAE-EWDK--I-S-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 22:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 23:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 24:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 25:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 26:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 27:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 28:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 29:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 30:
+Max score: 17.0
+Aligned sequences:
+EA-QIGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+EALSI-PAPATHAE-EWDK--I-S-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 31:
+Max score: 15.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK--I-S-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 32:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 33:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 34:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 35:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 36:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 37:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 38:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 39:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 40:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 41:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 42:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 43:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW
+I-PAPATHAE-EWDK---MS-S--GVT-D--MW
+--------------------------------------------------
+Alignment between sequence 1 and sequence 44:
+Max score: 12.0
+Aligned sequences:
+IGP-PDVHLEAE-DKAIILSISPPG-TKDSIMW

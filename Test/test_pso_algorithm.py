@@ -1,4 +1,5 @@
 from Bio import SeqIO
+from pathlib import Path
 from Algorithms.particle_swarm_optimization import pso_algorithm
 from Algorithms.smith_waterman import smith_waterman
 
@@ -16,7 +17,7 @@ best_score, best_seq1_idx, best_seq2_idx = pso_algorithm(sequences, num_particle
 best_seq1 = sequences[best_seq1_idx]
 best_seq2 = sequences[best_seq2_idx]
 
-output_path = 'result/pso_alignment_results.txt'
+output_path = 'Result/pso_alignment_results.txt'
 with open(output_path, 'w') as file:
     file.write(f"PSO Alignment Results:\n")
     file.write(f"Best Sequence Pair: Sequence {best_seq1_idx + 1} and Sequence {best_seq2_idx + 1}\n")

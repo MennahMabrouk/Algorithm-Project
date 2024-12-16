@@ -1,4 +1,5 @@
 from Bio import SeqIO
+from pathlib import Path
 from Algorithms.smith_waterman import smith_waterman
 
 # Load sequences from the FASTA file
@@ -10,7 +11,7 @@ if len(sequences) < 100:
     raise ValueError("The FASTA file must contain at least 100 sequences.")
 
 # Open a file to save the alignment results
-output_file = 'result/smith_waterman_alignment_results.txt'
+output_file = 'Result/smith_waterman_alignment_results.txt'
 
 with open(output_file, 'w') as f:
     # Perform pairwise alignment for the first 100 sequences

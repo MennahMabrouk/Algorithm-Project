@@ -125,8 +125,8 @@ def save_results_to_pdf(table1, table6, results):
     best_score = max(results, key=lambda x: results[x]["mean"])
     pdf.cell(0, 10, txt=f"The best performing algorithm is {best_score}.", ln=True)
 
-    pdf.output("result/algorithm_comparison.pdf")
-    logger.info("Results saved to result/algorithm_comparison.pdf")
+    pdf.output("Comparison/Final_Results/algorithm_comparison.pdf")
+    logger.info("Results saved to Comparison/Final_Results/algorithm_comparison.pdf")
 
 if __name__ == "__main__":
     compare_algorithms()

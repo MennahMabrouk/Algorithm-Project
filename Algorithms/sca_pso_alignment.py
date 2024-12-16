@@ -13,8 +13,11 @@ def asca_pso(sequences, num_particles=5, num_search_agents=10, num_iterations=20
 
     # Best solutions
     y_pbest = y.copy()
+
+    # Compute initial global best (y_gbest)
     y_gbest = y[np.argmax([
-        smith_waterman(sequences[int(np.round(y[i, 0]))], sequences[int(np.round(y[i, 1]))])
+        smith_waterman(sequences[int(np.clip(np.round(y[i, 0]), 0, num_sequences - 1))],
+                       sequences[int(np.clip(np.round(y[i, 1]), 0, num_sequences - 1))])
         for i in range(num_particles)
     ])]
 
@@ -42,36 +45,36 @@ def asca_pso(sequences, num_particles=5, num_search_agents=10, num_iterations=20
         for i in range(num_particles):
             best_score_in_group = max([
                 smith_waterman(
-                    sequences[int(np.round(x[i, j, 0]))],
-                    sequences[int(np.round(x[i, j, 1]))]
+                    sequences[int(np.clip(np.round(x[i, j, 0]), 0, num_sequences - 1))],
+                    sequences[int(np.clip(np.round(x[i, j, 1]), 0, num_sequences - 1))]
                 )
                 for j in range(num_search_agents)
             ])
             best_agent = x[i, np.argmax([
                 smith_waterman(
-                    sequences[int(np.round(x[i, j, 0]))],
-                    sequences[int(np.round(x[i, j, 1]))]
+                    sequences[int(np.clip(np.round(x[i, j, 0]), 0, num_sequences - 1))],
+                    sequences[int(np.clip(np.round(x[i, j, 1]), 0, num_sequences - 1))]
                 )
                 for j in range(num_search_agents)
             ])]
 
             # Update particle best
-            if smith_waterman(
-                sequences[int(np.round(best_agent[0]))],
-                sequences[int(np.round(best_agent[1]))]
-            ) > smith_waterman(
-                sequences[int(np.round(y[i, 0]))],
-                sequences[int(np.round(y[i, 1]))]
-            ):
+            current_best = smith_waterman(
+                sequences[int(np.clip(np.round(best_agent[0]), 0, num_sequences - 1))],
+                sequences[int(np.clip(np.round(best_agent[1]), 0, num_sequences - 1))]
+            )
+            current_particle_best = smith_waterman(
+                sequences[int(np.clip(np.round(y[i, 0]), 0, num_sequences - 1))],
+                sequences[int(np.clip(np.round(y[i, 1]), 0, num_sequences - 1))]
+            )
+
+            if current_best > current_particle_best:
                 y[i] = best_agent
 
             # Update global best
-            if smith_waterman(
-                sequences[int(np.round(y[i, 0]))],
-                sequences[int(np.round(y[i, 1]))]
-            ) > smith_waterman(
-                sequences[int(np.round(y_gbest[0]))],
-                sequences[int(np.round(y_gbest[1]))]
+            if current_particle_best > smith_waterman(
+                sequences[int(np.clip(np.round(y_gbest[0]), 0, num_sequences - 1))],
+                sequences[int(np.clip(np.round(y_gbest[1]), 0, num_sequences - 1))]
             ):
                 y_gbest = y[i]
 
@@ -88,7 +91,8 @@ def asca_pso(sequences, num_particles=5, num_search_agents=10, num_iterations=20
         y_gbest = np.clip(y_gbest, 0, num_sequences - 1)
 
     # Return best result
-    seq1_idx, seq2_idx = int(np.round(y_gbest[0])), int(np.round(y_gbest[1]))
+    seq1_idx, seq2_idx = int(np.clip(np.round(y_gbest[0]), 0, num_sequences - 1)), \
+                         int(np.clip(np.round(y_gbest[1]), 0, num_sequences - 1))
     best_score = smith_waterman(sequences[seq1_idx], sequences[seq2_idx])
     return y_gbest, best_score
 

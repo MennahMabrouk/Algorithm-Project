@@ -78,7 +78,7 @@ def pso_algorithm(sequences, num_particles=30, num_iterations=50, w=0.9, c1=1.5,
                         gbest_position - positions[i])
 
             # Random perturbation: Allow some randomness in the search space
-            random_factor = np.random.uniform(0, 0.5)  # Random factor to introduce exploration
+            random_factor = np.random.uniform(0, 1)  # Random factor to introduce exploration
             positions[i] = positions[i] + velocities[i] + random_factor * np.random.randint(-5, 5, 2)
 
             # Ensuring positions remain within bounds
@@ -107,6 +107,17 @@ def pso_algorithm(sequences, num_particles=30, num_iterations=50, w=0.9, c1=1.5,
         best_seq1_idx, best_seq2_idx = int(gbest_position[0]), int(gbest_position[1])
         print(f"Iteration {iteration + 1}: Best score = {gbest_score}, "
               f"Best pair: seq {best_seq1_idx + 1} and seq {best_seq2_idx + 1}")
+
+        # Random exploration check
+        if iteration % 5 == 0:
+            # Apply additional randomness to the position to enforce better exploration
+            for j in range(num_particles):
+                if random.random() < 0.3:  # 30% chance to reset position for further exploration
+                    new_pos = np.random.randint(0, num_sequences, 2)
+                    while new_pos[0] == new_pos[1]:  # Prevent self-alignment
+                        new_pos = np.random.randint(0, num_sequences, 2)
+                    positions[j] = new_pos
+                    pbest_positions[j] = new_pos  # Reset personal best for this particle
 
     # Return the best result
     best_seq1_idx, best_seq2_idx = int(gbest_position[0]), int(gbest_position[1])

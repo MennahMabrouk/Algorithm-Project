@@ -3,11 +3,18 @@ from Bio import SeqIO
 from Algorithms.smith_waterman import smith_waterman
 from Algorithms.asca_pso_alignment import asca_pso
 
-# Get the absolute path to the "Dataset" folder from the root of the project
+# Get the absolute path to the root directory of the project
 root_dir = Path(__file__).resolve().parent.parent  # This points to the root directory
 
-# Get the absolute path to the "Dataset" folder and check if it exists
+# Define the paths for the Dataset and Result folders
 fasta_path = root_dir / 'Dataset' / 'sequence.fasta'
+result_path = root_dir / 'Result'
+
+# Check if the Dataset file exists
+if not fasta_path.exists():
+    raise FileNotFoundError(f"The file {fasta_path} was not found.")
+
+# Print the file path being used
 print(f"Using fasta file at: {fasta_path}")
 
 # Read sequences from the FASTA file
@@ -32,9 +39,10 @@ print(f"Best Sequence 2: {best_seq2}")
 print(f"Alignment Score: {score}")
 print(f"Part of the Alignment:\n{aligned_seq1}\n{aligned_seq2}")
 
-# Define the result path
-result_path = root_dir / 'Result'
-result_path.mkdir(parents=True, exist_ok=True)  # Create the Result folder if it doesn't exist
+# Ensure the Result directory exists, and create it if it doesn't
+result_path.mkdir(parents=True, exist_ok=True)
+
+# Define the output path for the results
 output_path = result_path / 'asca_pso_alignment_results.txt'
 
 # Save the results to a file

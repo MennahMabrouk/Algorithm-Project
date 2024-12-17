@@ -22,14 +22,31 @@ logger = logging.getLogger()
 def benchmark_algorithm(algorithm_func, sequences, runs=50, fragment_length=50):
     fitness_values = []
     start_time = time.time()
+
     for _ in range(runs):
         if algorithm_func.__name__ == "flat_algorithm":
-            score, _ = algorithm_func(sequences[0], sequences[1], fragment_length)
+            # flat_algorithm returns two values: score and fragments
+            result = algorithm_func(sequences[0], sequences[1], fragment_length)
+            score = result[0]  # Take the first element (score)
+            # Optionally, you can use the second element (fragments) if needed
         elif algorithm_func.__name__ == "pso_algorithm":
+            # For PSO algorithm, expect (score, seq1_idx, seq2_idx)
             score, best_seq1_idx, best_seq2_idx = algorithm_func(sequences, num_particles=30, num_iterations=50)
+        elif algorithm_func.__name__ == "smith_waterman":
+            # For Smith-Waterman, the function returns (score, aligned_seq1, aligned_seq2)
+            score, _, _ = smith_waterman(sequences[0], sequences[1])
         else:
-            _, score = algorithm_func(sequences)
+            # Handle other algorithms
+            result = algorithm_func(sequences)
+            score = result[1]  # Assuming the algorithm returns score as the second value
+
+        # Ensure the score is a valid number (not a string)
+        if not isinstance(score, (int, float)):
+            logger.error(f"Invalid score returned: {score}")
+            raise ValueError(f"Invalid score returned by {algorithm_func.__name__} algorithm: {score}")
+
         fitness_values.append(score)
+
     elapsed_time = (time.time() - start_time) / runs
     return fitness_values, elapsed_time
 

@@ -1,11 +1,11 @@
 import numpy as np
 from Bio import SeqIO
+from pathlib import Path
 
 # Define the scoring system
 MATCH = 2  # Score for a match
 MISMATCH = -1  # Score for a mismatch
 GAP = -1  # Penalty for a gap
-
 
 # Function to calculate the Smith-Waterman matrix (local alignment)
 def smith_waterman(seq1, seq2):
@@ -69,38 +69,3 @@ def sine_cosine_algorithm(sequences, num_particles=30, num_iterations=50):
             velocities[i] = np.clip(velocities[i], -0.1, 0.1)  # Velocity limits
 
     return global_best, global_best_score
-
-
-# Read sequences from the FASTA file
-fasta_path = 'Dataset/sequence.fasta'  # Path to your FASTA file
-sequences = [str(record.seq) for record in SeqIO.parse(fasta_path, "fasta")]
-
-# Run the Sine-Cosine Algorithm
-best_pair, best_score = sine_cosine_algorithm(sequences)
-
-# Get the best sequences
-seq1_idx, seq2_idx = best_pair[0], best_pair[1]
-best_seq1 = sequences[seq1_idx]
-best_seq2 = sequences[seq2_idx]
-
-# Perform Smith-Waterman on the best pair
-alignment_score = smith_waterman(best_seq1, best_seq2)
-
-# Prepare the result for saving
-result = (
-    f"Best sequence pair: {seq1_idx + 1} (Seq {seq1_idx + 1}) and {seq2_idx + 1} (Seq {seq2_idx + 1})\n"
-    f"Alignment score: {alignment_score}\n"
-    f"Sequence 1: {best_seq1}\n"
-    f"Sequence 2: {best_seq2}\n"
-    f"\n"
-    f"Sine-Cosine Algorithm details:\n"
-    f"Best parameters: {best_pair}\n"
-    f"Best score: {best_score}\n"
-)
-
-# Save the result to a file in the 'result' folder
-output_path = 'result/sca_alignment_results.txt'
-with open(output_path, 'w') as file:
-    file.write(result)
-
-print(f"SCA alignment results have been saved to {output_path}")

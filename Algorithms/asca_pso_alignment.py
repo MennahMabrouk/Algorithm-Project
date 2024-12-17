@@ -1,11 +1,8 @@
 import numpy as np
-from Bio import SeqIO
 from Algorithms.smith_waterman import smith_waterman
 from Algorithms.sine_cosine_algorithm import sine_cosine_algorithm  # Importing SCA
-from Algorithms.particle_swarm_optimization import pso_algorithm  # Importing PSO
 
-
-# ASCA-PSO for sequence alignment using Sine-Cosine Algorithm and Particle Swarm Optimization
+# ASCA-PSO for sequence alignment using Sine-Cosine Algorithm for exploration and PSO for exploitation
 def asca_pso(sequences, num_particles=5, num_search_agents=10, num_iterations=20):
     """
     ASCA-PSO for sequence alignment using Sine-Cosine Algorithm for exploration and PSO for exploitation.
@@ -43,7 +40,7 @@ def asca_pso(sequences, num_particles=5, num_search_agents=10, num_iterations=20
     a = 2.0  # exploration factor for SCA
 
     for t in range(num_iterations):
-        # Exploration: Use Sine-Cosine Algorithm (SCA)
+        # Exploration: Use Sine-Cosine Algorithm (SCA) for global search
         for i in range(num_particles):
             for j in range(num_search_agents):
                 r1 = np.random.uniform(0, a * (1 - t / num_iterations))
@@ -55,9 +52,9 @@ def asca_pso(sequences, num_particles=5, num_search_agents=10, num_iterations=20
                 else:
                     x[i, j] += r1 * np.cos(r2) * abs(r3 * y[i] - x[i, j])
 
-                x[i, j] = np.clip(x[i, j], 0, num_sequences - 1)
+                x[i, j] = np.clip(x[i, j], 0, num_sequences - 1)  # Ensure bounds
 
-        # Exploitation: Use PSO
+        # Exploitation: Use PSO to refine the solutions
         for i in range(num_particles):
             best_score_in_group = max([
                 smith_waterman(

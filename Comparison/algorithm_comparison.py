@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.stats import wilcoxon
 from fpdf import FPDF
 import time
 import logging
@@ -20,48 +21,34 @@ logger = logging.getLogger()
 # Benchmark function for algorithms
 def benchmark_algorithm(algorithm_func, sequences, runs=50, fragment_length=50):
     fitness_values = []
-    times = []
-    visited_pairs = set()  # To track unique sequence pairs
+    start_time = time.time()
 
-    for i in range(runs):
-        start_time = time.time()
+    for _ in range(runs):
+        if algorithm_func.__name__ == "flat_algorithm":
+            # flat_algorithm returns two values: score and fragments
+            result = algorithm_func(sequences[0], sequences[1], fragment_length)
+            score = result[0]  # Take the first element (score)
+            # Optionally, you can use the second element (fragments) if needed
+        elif algorithm_func.__name__ == "pso_algorithm":
+            # For PSO algorithm, expect (score, seq1_idx, seq2_idx)
+            score, best_seq1_idx, best_seq2_idx = algorithm_func(sequences, num_particles=30, num_iterations=50)
+        elif algorithm_func.__name__ == "smith_waterman":
+            # For Smith-Waterman, the function returns (score, aligned_seq1, aligned_seq2)
+            score, _, _ = smith_waterman(sequences[0], sequences[1])
+        else:
+            # Handle other algorithms
+            result = algorithm_func(sequences)
+            score = result[1]  # Assuming the algorithm returns score as the second value
 
-        # Ensure unique sequence pairs
-        while True:
-            seq1_idx, seq2_idx = np.random.randint(0, len(sequences), size=2)
-            if seq1_idx != seq2_idx and (seq1_idx, seq2_idx) not in visited_pairs:
-                visited_pairs.add((seq1_idx, seq2_idx))
-                break
-
-        seq1, seq2 = sequences[seq1_idx], sequences[seq2_idx]
-
-        try:
-            if algorithm_func.__name__ == "flat_algorithm":
-                result = algorithm_func(seq1, seq2, fragment_length)
-                score = result[0]
-            elif algorithm_func.__name__ == "pso_algorithm":
-                score, _, _ = algorithm_func([seq1, seq2], num_particles=30, num_iterations=50)
-            elif algorithm_func.__name__ == "smith_waterman":
-                score, _, _ = smith_waterman(seq1, seq2)
-            else:
-                result = algorithm_func([seq1, seq2])
-                score = result[1]
-        except Exception as e:
-            logger.error(f"Error during iteration {i + 1}: {e}")
-            score = -np.inf  # Assign a bad score for failed iterations
-
-        elapsed_time = time.time() - start_time
-        fitness_values.append(score)
-        times.append(elapsed_time)
-
-        # Append results to file immediately after each iteration
-        save_iteration_result(algorithm_func.__name__, i + 1, score, elapsed_time)
-
+        # Ensure the score is a valid number (not a string)
         if not isinstance(score, (int, float)):
-            logger.error(f"Non-numeric score returned: {score}")
+            logger.error(f"Invalid score returned: {score}")
             raise ValueError(f"Invalid score returned by {algorithm_func.__name__} algorithm: {score}")
 
-    return fitness_values, times
+        fitness_values.append(score)
+
+    elapsed_time = (time.time() - start_time) / runs
+    return fitness_values, elapsed_time
 
 
 # Load sequences
@@ -69,39 +56,105 @@ def load_sequences(fasta_path):
     return [str(record.seq) for record in SeqIO.parse(fasta_path, "fasta")]
 
 
-# Save scores and times for each algorithm iteration
-def save_iteration_result(algorithm_name, iteration, score, elapsed_time):
-    output_dir = Path("Comparison/Results/")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    file_path = output_dir / f"{algorithm_name}_results.txt"
-
-    with open(file_path, "a") as file:  # Append mode
-        file.write(f"Iteration {iteration}: Score = {score}, Time = {elapsed_time:.4f} seconds\n")
-    logger.info(f"Iteration {iteration} for {algorithm_name} saved.")
-
-
 # Main comparison function
 def compare_algorithms():
-    root_dir = Path(__file__).resolve().parent.parent
-    fasta_path = root_dir / "Dataset" / "sequence.fasta"
+    # Get the root directory path
+    root_dir = Path(__file__).resolve().parent.parent  # This points to the root directory
+
+    # Define the path to the fasta file relative to root directory
+    fasta_path = root_dir / 'Dataset' / 'sequence.fasta'
+
+    # Load sequences
     sequences = load_sequences(fasta_path)
 
+    # Define algorithms with Smith-Waterman as baseline
     algorithms = {
-        "Smith-Waterman": smith_waterman,
+        "Smith-Waterman (Baseline)": smith_waterman,
         "FLAT": flat_algorithm,
         "PSO": pso_algorithm,
         "SCA": sine_cosine_algorithm,
         "ASCA-PSO": asca_pso
     }
 
+    # Metrics storage
+    results = {}
     logger.info("Starting benchmark for all algorithms...")
-
-    # Run each algorithm independently
     for name, func in algorithms.items():
         logger.info(f"Running {name}...")
-        benchmark_algorithm(func, sequences, runs=50)
+        scores, avg_time = benchmark_algorithm(func, sequences)
+        results[name] = {
+            "scores": scores,
+            "mean": np.mean(scores),
+            "median": np.median(scores),
+            "std": np.std(scores),
+            "avg_time": avg_time
+        }
 
-    logger.info("All benchmarks completed.")
+    # Generate tables
+    generate_tables_and_pdf(results)
+
+
+def generate_tables_and_pdf(results):
+    # Table 1: Benchmark Metrics
+    table1 = pd.DataFrame({
+        "Algorithm": results.keys(),
+        "Mean Score": [res["mean"] for res in results.values()],
+        "Median Score": [res["median"] for res in results.values()],
+        "Std Dev": [res["std"] for res in results.values()],
+        "Avg Time (s)": [res["avg_time"] for res in results.values()]
+    })
+
+    # Table 6: P-values (comparison with Smith-Waterman baseline)
+    baseline_scores = results["Smith-Waterman (Baseline)"]["scores"]
+    p_values = {alg: wilcoxon(baseline_scores, res["scores"]).pvalue for alg, res in results.items() if
+                alg != "Smith-Waterman (Baseline)"}
+    table6 = pd.DataFrame({"Algorithm": list(p_values.keys()), "P-value": list(p_values.values())})
+
+    # Save to PDF
+    save_results_to_pdf(table1, table6, results)
+
+
+def save_results_to_pdf(table1, table6, results):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    # Table 1: Metrics
+    pdf.cell(200, 10, txt="Table 1: Benchmark Metrics", ln=True)
+    for _, row in table1.iterrows():
+        pdf.cell(0, 10,
+                 txt=f"{row['Algorithm']} - Mean: {row['Mean Score']:.2f}, Std Dev: {row['Std Dev']:.2f}, Time: {row['Avg Time (s)']:.4f}s",
+                 ln=True)
+
+    # Table 6: P-values
+    pdf.cell(200, 10, txt="\nTable 6: Wilcoxon Rank-Sum Test P-values", ln=True)
+    for _, row in table6.iterrows():
+        p_val_display = f"_{row['P-value']:.4f}_" if row['P-value'] > 0.05 else f"{row['P-value']:.4f}"
+        pdf.cell(0, 10, txt=f"Baseline vs {row['Algorithm']}: P-value = {p_val_display}", ln=True)
+
+    # Convergence Curves
+    plt.figure(figsize=(10, 6))
+    for alg, res in results.items():
+        plt.plot(np.cumsum(res["scores"]) / np.arange(1, len(res["scores"]) + 1), label=alg)
+    plt.xlabel("Runs")
+    plt.ylabel("Cumulative Mean Fitness")
+    plt.title("Convergence Curves")
+    plt.legend()
+    plt.savefig("convergence_curves.png")
+    plt.close()
+
+    pdf.add_page()
+    pdf.image("convergence_curves.png", x=10, y=20, w=190)
+
+    # Conclusions
+    pdf.cell(200, 10, txt="\nConclusions:", ln=True)
+    best_avg = min(results, key=lambda x: results[x]["avg_time"])
+    pdf.cell(0, 10, txt=f"The fastest algorithm is {best_avg}.", ln=True)
+    best_score = max(results, key=lambda x: results[x]["mean"])
+    pdf.cell(0, 10, txt=f"The best performing algorithm is {best_score}.", ln=True)
+
+    pdf.output("Comparison/Final_Results/algorithm_comparison.pdf")
+    logger.info("Results saved to Comparison/Final_Results/algorithm_comparison.pdf")
 
 
 if __name__ == "__main__":

@@ -1,102 +1,91 @@
 import numpy as np
+import logging
+import time
 from Algorithms.smith_waterman import smith_waterman
-import random
 
-# Parameters for Smith-Waterman scoring system
-MATCH = 2
-MISMATCH = -1
-GAP = -1
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-
-def pso_fitness(params, sequences, visited_pairs):
+def pso_algorithm(sequence_pairs, num_particles=2, num_iterations=10, w=0.9, c1=1.5, c2=1.5):
     """
-    Fitness function to calculate Smith-Waterman alignment score.
+    Particle Swarm Optimization (PSO) for sequence alignment using predefined sequence pairs.
+
     Args:
-        params (list): List of two sequence indices.
-        sequences (list): List of sequences.
-        visited_pairs (set): Set of explored pairs to avoid duplicates.
-
-    Returns:
-        float: Negative alignment score or penalty for revisited pairs.
-    """
-    seq1_idx, seq2_idx = int(params[0]), int(params[1])
-
-    if seq1_idx == seq2_idx or (seq1_idx, seq2_idx) in visited_pairs:
-        return float('inf')  # Penalize self-alignment or revisited pairs
-
-    visited_pairs.add((seq1_idx, seq2_idx))
-    score, _, _ = smith_waterman(sequences[seq1_idx], sequences[seq2_idx])
-    return -score  # Negate the score for PSO minimization
-
-
-def pso_algorithm(sequences, num_particles=30, num_iterations=50, w=0.9, c1=1.5, c2=1.5):
-    """
-    Particle Swarm Optimization (PSO) for sequence alignment.
-    Args:
-        sequences (list): List of sequences.
-        num_particles (int): Number of particles in the swarm.
+        sequence_pairs (list): List of sequence pairs as dictionaries {"seq1": str, "seq2": str}.
+        num_particles (int): Number of particles (pairs) per iteration.
         num_iterations (int): Number of iterations.
         w (float): Inertia weight.
         c1, c2 (float): Cognitive and social coefficients.
 
     Returns:
-        Best alignment score and sequence pair indices.
+        iteration_scores (list): Scores for each iteration.
+        global_best_pair (tuple): The best aligned sequences.
+        global_best_alignment (tuple): The alignment of the best pair.
+        iteration_times (list): Time taken for each iteration.
     """
-    num_sequences = len(sequences)
+    iteration_scores = []
+    iteration_times = []
+    total_pairs = len(sequence_pairs)
 
-    # Initialize positions, velocities, and tracking
-    positions = np.random.randint(0, num_sequences, (num_particles, 2))
-    velocities = np.random.uniform(-1, 1, (num_particles, 2))
-    visited_pairs = set()
+    if total_pairs < num_particles:
+        raise ValueError(f"Not enough sequence pairs for {num_particles} particles.")
 
-    # Initialize personal and global bests
-    pbest_positions = positions.copy()
-    pbest_scores = np.array([pso_fitness(pos, sequences, visited_pairs) for pos in positions])
+    # Initialize particles
+    particles = np.random.choice(range(total_pairs), num_particles, replace=False)
+    velocities = np.zeros(num_particles)  # Initialize velocities
+    personal_best_scores = -np.inf * np.ones(num_particles)
+    personal_best_positions = particles.copy()
 
-    gbest_position = pbest_positions[np.argmin(pbest_scores)]
-    gbest_score = np.min(pbest_scores)
-    last_best_score = gbest_score
+    global_best_score = -np.inf
+    global_best_position = None
+    global_best_pair = None
+    global_best_alignment = None
 
-    # Main PSO loop
-    for iteration in range(num_iterations):
+    for t in range(num_iterations):
+        logger.info(f"Starting PSO iteration {t + 1}...")
+        start_time = time.time()
+
+        iteration_best_score = -np.inf
+
+        for i, particle_idx in enumerate(particles):
+            seq1, seq2 = sequence_pairs[particle_idx]["seq1"], sequence_pairs[particle_idx]["seq2"]
+
+            # Calculate fitness score using smith_waterman
+            try:
+                score, align1, align2, _ = smith_waterman(seq1, seq2)
+                # Update personal best
+                if score > personal_best_scores[i]:
+                    personal_best_scores[i] = score
+                    personal_best_positions[i] = particle_idx
+
+                # Update global best
+                if score > global_best_score:
+                    global_best_score = score
+                    global_best_position = particle_idx
+                    global_best_pair = (seq1, seq2)
+                    global_best_alignment = (align1, align2)
+
+                if score > iteration_best_score:
+                    iteration_best_score = score
+
+            except Exception as e:
+                logger.error(f"Error during PSO iteration {t + 1} for pair {sequence_pairs[particle_idx]}: {e}")
+
+        # Update velocities and positions
         for i in range(num_particles):
-            # Update velocity and position
-            r1, r2 = np.random.rand(2), np.random.rand(2)
-            velocities[i] = w * velocities[i] + c1 * r1 * (pbest_positions[i] - positions[i]) + c2 * r2 * (
-                    gbest_position - positions[i])
-            positions[i] = np.clip(positions[i] + velocities[i], 0, num_sequences - 1)
+            r1, r2 = np.random.rand(), np.random.rand()
+            velocities[i] = (
+                w * velocities[i]
+                + c1 * r1 * (personal_best_positions[i] - particles[i])
+                + c2 * r2 * (global_best_position - particles[i])
+            )
+            # Update position
+            particles[i] = int(np.clip(particles[i] + velocities[i], 0, total_pairs - 1))
 
-            # Prevent self-alignment
-            if positions[i][0] == positions[i][1]:
-                positions[i][1] = (positions[i][1] + random.randint(1, num_sequences - 1)) % num_sequences
+        iteration_time = time.time() - start_time
+        iteration_times.append(iteration_time)
+        logger.info(f"Iteration {t + 1} best score: {iteration_best_score}")
+        iteration_scores.append(iteration_best_score)
 
-            # Evaluate fitness
-            score = pso_fitness(positions[i], sequences, visited_pairs)
-
-            # Update personal best
-            if score < pbest_scores[i]:
-                pbest_scores[i] = score
-                pbest_positions[i] = positions[i]
-
-        # Update global best
-        min_score_idx = np.argmin(pbest_scores)
-        if pbest_scores[min_score_idx] < gbest_score:
-            gbest_score = pbest_scores[min_score_idx]
-            gbest_position = pbest_positions[min_score_idx]
-
-        # Enforce random reset if stuck
-        if gbest_score == last_best_score:
-            print(f"Duplicate solution detected at Iteration {iteration + 1}. Resetting particles.")
-            positions = np.random.randint(0, num_sequences, (num_particles, 2))
-            velocities = np.random.uniform(-1, 1, (num_particles, 2))
-            pbest_positions = positions.copy()
-            pbest_scores = np.array([pso_fitness(pos, sequences, visited_pairs) for pos in positions])
-        else:
-            last_best_score = gbest_score
-
-        # Print iteration result
-        best_seq1_idx, best_seq2_idx = int(gbest_position[0]), int(gbest_position[1])
-        print(f"Iteration {iteration + 1}: Best score = {-gbest_score}, "
-              f"Best pair: seq {best_seq1_idx + 1} and seq {best_seq2_idx + 1}")
-
-    return -gbest_score, int(gbest_position[0]), int(gbest_position[1])
+    logger.info(f"Global best score: {global_best_score}, Best pair: {global_best_pair}")
+    return iteration_scores, global_best_pair, global_best_alignment, iteration_times

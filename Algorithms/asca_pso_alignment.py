@@ -1,149 +1,110 @@
 import numpy as np
 import logging
+import time
 from Algorithms.smith_waterman import smith_waterman
-from Algorithms.sine_cosine_algorithm import sine_cosine_algorithm  # Importing SCA
 
-# Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# ASCA-PSO for sequence alignment
-def asca_pso(sequences, num_particles=5, num_search_agents=10, num_iterations=20):
+def asca_pso(sequence_pairs, num_particles=2, num_iterations=10, w=0.9, c1=1.5, c2=1.5, a=2):
     """
-    ASCA-PSO for sequence alignment using Sine-Cosine Algorithm for exploration and PSO for exploitation.
+    ASCA-PSO for sequence alignment using predefined sequence pairs.
 
     Args:
-        sequences (list): List of sequences as strings.
-        num_particles (int): Number of particles in the swarm.
-        num_search_agents (int): Number of search agents.
+        sequence_pairs (list): List of sequence pairs as dictionaries {"seq1": str, "seq2": str}.
+        num_particles (int): Number of particles (pairs) per iteration.
         num_iterations (int): Number of iterations for the optimization.
+        w (float): Inertia weight for PSO.
+        c1, c2 (float): Cognitive and social coefficients for PSO.
+        a (float): Exploration factor for SCA.
 
     Returns:
-        best_alignment (tuple): The best aligned sequences.
-        best_score (int): The best alignment score.
+        iteration_scores (list): Scores for each iteration.
+        global_best_pair (tuple): The best aligned sequences (seq1, seq2).
+        global_best_alignment (tuple): Aligned sequences (aligned_seq1, aligned_seq2) for the best pair.
+        global_best_score (float): The best alignment score achieved globally.
+        iteration_times (list): Time taken for each iteration.
     """
-    num_sequences = len(sequences)
+    iteration_scores = []
+    iteration_times = []
+    total_pairs = len(sequence_pairs)
 
-    # Initialize positions and velocities for PSO
-    x = np.zeros((num_particles, num_search_agents, 2))
-    y = np.zeros((num_particles, 2))
-    v = np.random.uniform(-1, 1, (num_particles, 2))
+    if total_pairs < num_particles:
+        raise ValueError(f"Not enough sequence pairs for {num_particles} particles.")
 
-    # Track used sequence pairs to ensure uniqueness
-    used_pairs = set()
+    # Initialize particles (indices for sequence pairs)
+    particles = np.random.choice(range(total_pairs), num_particles, replace=False)
+    velocities = np.zeros(num_particles)  # PSO velocities
+    personal_best_scores = -np.inf * np.ones(num_particles)
+    personal_best_positions = particles.copy()
 
-    def get_unique_pair():
-        """Generate a unique sequence pair."""
-        available_pairs = list(set((i, j) for i in range(num_sequences) for j in range(num_sequences) if i != j) - used_pairs)
-        if not available_pairs:
-            raise ValueError("No more unique pairs available.")
-        seq1, seq2 = available_pairs[np.random.randint(0, len(available_pairs))]
-        used_pairs.add((seq1, seq2))
-        return seq1, seq2
-
-    # Initialize particles with unique sequence pairs
-    logger.info("Initializing particles with unique sequence pairs...")
-    for i in range(num_particles):
-        for j in range(num_search_agents):
-            seq1, seq2 = get_unique_pair()
-            x[i, j] = [seq1, seq2]
-
-    # Initialize personal bests (pbest) and global best (gbest)
-    for i in range(num_particles):
-        seq1_idx, seq2_idx = get_unique_pair()
-        y[i] = [seq1_idx, seq2_idx]
-
-    y_pbest = y.copy()
-
-    # Compute initial global best (y_gbest)
-    logger.info("Computing initial global best...")
-    fitness_scores = [
-        smith_waterman(
-            sequences[int(y[i, 0])],
-            sequences[int(y[i, 1])]
-        )[0]
-        for i in range(num_particles)
-    ]
-    global_best_index = np.argmax(fitness_scores)
-    y_gbest = y[global_best_index]
-    best_global_score = fitness_scores[global_best_index]
-    logger.info(f"Initial global best score = {best_global_score}")
-
-    # PSO Parameters
-    w = 0.7  # inertia weight
-    c1, c2 = 1.5, 1.5  # cognitive and social coefficients
-    a = 2.0  # exploration factor for SCA
-    stagnation_counter = 0  # Count iterations without improvement
+    global_best_score = -np.inf
+    global_best_position = None
+    global_best_alignment = (None, None)
+    global_best_pair = (None, None)
 
     for t in range(num_iterations):
-        logger.info(f"Starting iteration {t + 1}...")
+        start_time = time.time()
+        logger.info(f"Starting ASCA-PSO iteration {t + 1}...")
 
-        # Exploration: Use Sine-Cosine Algorithm (SCA) for global search
-        for i in range(num_particles):
-            for j in range(num_search_agents):
-                r1 = np.random.uniform(0, a * (1 - t / num_iterations))
-                r2 = np.random.uniform(0, 2 * np.pi)
-                r3, r4 = np.random.uniform(), np.random.uniform()
+        # **Bottom Layer: Sine-Cosine Algorithm (SCA)**
+        r1 = a - (t / num_iterations) * a  # Exploration factor
+        iteration_best_score = -np.inf
+
+        for i, particle_idx in enumerate(particles):
+            seq1, seq2 = sequence_pairs[particle_idx]["seq1"], sequence_pairs[particle_idx]["seq2"]
+
+            # Generate random factors
+            r2 = np.random.uniform(0, 2 * np.pi)
+            r3, r4 = np.random.uniform(0, 1, 2)
+
+            try:
+                score, aligned_seq1, aligned_seq2, _ = smith_waterman(seq1, seq2)
+                if not np.isfinite(score):
+                    logger.warning(f"Non-finite score for seq1: {seq1}, seq2: {seq2}. Skipping.")
+                    continue
 
                 if r4 < 0.5:
-                    x[i, j] += r1 * np.sin(r2) * abs(r3 * y[i] - x[i, j])
+                    updated_position = particle_idx + r1 * np.sin(r2) * abs(r3 * personal_best_positions[i] - particle_idx)
                 else:
-                    x[i, j] += r1 * np.cos(r2) * abs(r3 * y[i] - x[i, j])
+                    updated_position = particle_idx + r1 * np.cos(r2) * abs(r3 * personal_best_positions[i] - particle_idx)
 
-                x[i, j] = np.clip(x[i, j], 0, num_sequences - 1)
+                updated_position = int(np.clip(updated_position, 0, total_pairs - 1))
+                seq1, seq2 = sequence_pairs[updated_position]["seq1"], sequence_pairs[updated_position]["seq2"]
+                updated_score, updated_aligned_seq1, updated_aligned_seq2, _ = smith_waterman(seq1, seq2)
 
-        logger.info("Exploration phase completed. Starting exploitation phase...")
-        # Exploitation: Use PSO to refine the solutions
+                if updated_score > personal_best_scores[i]:
+                    personal_best_scores[i] = updated_score
+                    personal_best_positions[i] = updated_position
+
+                if updated_score > global_best_score:
+                    global_best_score = updated_score
+                    global_best_position = updated_position
+                    global_best_pair = (seq1, seq2)
+                    global_best_alignment = (updated_aligned_seq1, updated_aligned_seq2)
+
+                if updated_score > iteration_best_score:
+                    iteration_best_score = updated_score
+
+            except Exception as e:
+                logger.error(f"Error during ASCA-PSO iteration {t + 1} for particle {particle_idx}: {e}")
+
+        # **Top Layer: Particle Swarm Optimization (PSO)**
         for i in range(num_particles):
-            particle_fitness_scores = [
-                smith_waterman(
-                    sequences[int(x[i, j, 0])],
-                    sequences[int(x[i, j, 1])]
-                )[0]
-                for j in range(num_search_agents)
-            ]
-            best_agent_index = np.argmax(particle_fitness_scores)
-            best_agent = x[i, best_agent_index]
-
-            # Update personal best
-            current_best = particle_fitness_scores[best_agent_index]
-            current_particle_best = smith_waterman(
-                sequences[int(y[i, 0])],
-                sequences[int(y[i, 1])]
-            )[0]
-
-            if current_best > current_particle_best:
-                y[i] = best_agent
-
-            # Update global best
-            if current_best > best_global_score:
-                y_gbest = y[i]
-                best_global_score = current_best
-                stagnation_counter = 0  # Reset stagnation counter
-            else:
-                stagnation_counter += 1
-
-            # Update velocity and position
-            v[i] = (
-                w * v[i] +
-                c1 * np.random.rand() * (y_pbest[i] - y[i]) +
-                c2 * np.random.rand() * (y_gbest - y[i])
+            r1, r2 = np.random.rand(), np.random.rand()
+            velocities[i] = (
+                w * velocities[i] +
+                c1 * r1 * (personal_best_positions[i] - particles[i]) +
+                c2 * r2 * (global_best_position - particles[i])
             )
-            y[i] += v[i]
-            y[i] = np.clip(y[i], 0, num_sequences - 1)
+            particles[i] = int(np.clip(particles[i] + velocities[i], 0, total_pairs - 1))
 
-        # Force exploration if stagnated
-        if stagnation_counter > 3:
-            logger.warning(f"Stagnation detected at iteration {t + 1}. Resetting particles.")
-            for i in range(num_particles):
-                seq1, seq2 = get_unique_pair()
-                y[i] = [seq1, seq2]
-            stagnation_counter = 0
+        end_time = time.time()
+        iteration_time = end_time - start_time
+        iteration_times.append(iteration_time)
 
-        logger.info(f"Iteration {t + 1} completed. Global best score = {best_global_score}")
+        logger.info(f"Iteration {t + 1} completed in {iteration_time:.2f} seconds with best score: {iteration_best_score}")
+        iteration_scores.append(iteration_best_score)
 
-    # Return best result
-    seq1_idx, seq2_idx = int(y_gbest[0]), int(y_gbest[1])
-    best_score = smith_waterman(sequences[seq1_idx], sequences[seq2_idx])[0]
-    logger.info(f"Final best score = {best_score}, Best pair: seq {seq1_idx + 1} and seq {seq2_idx + 1}")
-    return y_gbest, best_score
+    logger.info(f"Global best score: {global_best_score}, Best pair: {global_best_pair}, Aligned sequences: {global_best_alignment}")
+    return iteration_scores, global_best_pair, global_best_alignment, global_best_score, iteration_times

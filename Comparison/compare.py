@@ -17,11 +17,11 @@ logger.addHandler(console_handler)
 
 # Constants
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SEQUENCE_FILE = os.path.join(BASE_DIR, "Results", "sequence_combinations.json")
+SEQUENCE_FILE = os.path.join(BASE_DIR, "protein_combinations.json")
 RESULT_FILE_TEMPLATE = os.path.join(
     BASE_DIR, "Results", "combined_algorithms_results_{num_iterations}.json"
 )
-num_iterations = 5
+num_iterations = 700
 
 # Helper functions
 def load_sequence_pairs(max_pairs=None):
@@ -29,7 +29,14 @@ def load_sequence_pairs(max_pairs=None):
         raise FileNotFoundError(f"{SEQUENCE_FILE} does not exist.")
     with open(SEQUENCE_FILE, "r") as f:
         data = json.load(f)
-    pairs = data["combinations"]
+
+    # Expecting `data` to be a list of lists
+    if not isinstance(data, list) or not all(isinstance(pair, list) and len(pair) == 2 for pair in data):
+        raise ValueError("Invalid JSON format. Expected a list of pairs (each pair being a list of two sequences).")
+
+    # Convert to a list of dictionaries for compatibility
+    pairs = [{"seq1": pair[0], "seq2": pair[1]} for pair in data]
+
     return pairs[:max_pairs] if max_pairs else pairs
 
 

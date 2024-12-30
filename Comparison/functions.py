@@ -256,10 +256,14 @@ def generate_table_6(json_file, output_dir):
     else:
         print("No results generated for Table 6")
 
-output_directory = "/Users/mennahtullahmabrouk/PycharmProjects/Algorthium Project/Algorithm-Project/Comparison/Results"
+output_directory = path.join("Results")
 makedirs(output_directory, exist_ok=True)
 
-results_file = "/Users/mennahtullahmabrouk/PycharmProjects/Algorthium Project/Algorithm-Project/Comparison/Results/combined_algorithms_results_300.json"
+results_file = path.join(output_directory, "combined_algorithms_results_300.json")
+
+if not path.exists(results_file):
+    print(f"Error: Results file not found at {path.abspath(results_file)}. Please ensure the file exists.")
+    exit(1)
 
 generate_table_1(output_directory)
 generate_table_2(output_directory)
@@ -267,3 +271,5 @@ generate_table(results_file, output_directory, "table_3_average_minimum_values",
 generate_table(results_file, output_directory, "table_4_standard_deviation", np.std)
 generate_table(results_file, output_directory, "table_5_elapsed_time", lambda x: np.mean(x))
 generate_table_6(results_file, output_directory)
+
+

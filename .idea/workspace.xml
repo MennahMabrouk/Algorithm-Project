@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4cd7dd3b-990d-4d70-a4cd-a68c105f6568" name="Changes" comment="update code" />
+    <list default="true" id="4cd7dd3b-990d-4d70-a4cd-a68c105f6568" name="Changes" comment="update code">
+      <change beforePath="$PROJECT_DIR$/Comparison/Results/combined_algorithms_results_10.json" beforeDir="false" afterPath="$PROJECT_DIR$/Comparison/Results/combined_algorithms_results_10.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -324,7 +326,31 @@
       <option name="project" value="LOCAL" />
       <updated>1735591458124</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="update code">
+      <option name="closed" value="true" />
+      <created>1735591606320</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1735591606320</updated>
+    </task>
+    <task id="LOCAL-00032" summary="update code">
+      <option name="closed" value="true" />
+      <created>1735591658718</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1735591658718</updated>
+    </task>
+    <task id="LOCAL-00033" summary="update code">
+      <option name="closed" value="true" />
+      <created>1735591703747</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1735591703747</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

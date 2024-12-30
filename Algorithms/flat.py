@@ -34,6 +34,7 @@ def flat_algorithm(sequence1, sequence2, fragment_length, max_iterations=10):
     best_score = -np.inf
     aligned_seq1, aligned_seq2 = "", ""
     total_execution_time = 0
+    score_alignment_map = {}
 
     def random_exploration_method(len_seq1, len_seq2, method):
         if method == 1:
@@ -79,6 +80,8 @@ def flat_algorithm(sequence1, sequence2, fragment_length, max_iterations=10):
                 logger.warning(f"Non-finite score detected for iteration {iteration + 1}. Skipping.")
                 continue
 
+            score_alignment_map[score] = (aligned_fragment1, aligned_fragment2)
+
             if score > best_score:
                 best_score = score
                 aligned_seq1, aligned_seq2 = aligned_fragment1, aligned_fragment2
@@ -93,4 +96,5 @@ def flat_algorithm(sequence1, sequence2, fragment_length, max_iterations=10):
         best_score = 0
         aligned_seq1, aligned_seq2 = "", ""
 
+    logger.info(f"Final Score-Alignment Map: {score_alignment_map}")
     return best_score, aligned_seq1, aligned_seq2, total_execution_time

@@ -67,7 +67,6 @@ def plot_results(results, num_iterations, output_path):
             print(f"Warning: {algorithm} does not have scores for all {num_iterations} iterations. Padding with zeros.")
             scores = scores[:num_iterations] + [0] * (num_iterations - len(scores))
 
-        # Smooth the curve
         x_smooth = np.linspace(x_values.min(), x_values.max(), 300)
         y_smooth = make_interp_spline(x_values, scores, k=3)(x_smooth)
         plt.plot(x_smooth, y_smooth, label=algorithm)

@@ -6,15 +6,16 @@ from Algorithms.smith_waterman import smith_waterman
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def sine_cosine_algorithm(sequence_pairs, num_particles=2, num_iterations=10, a=2):
+def sine_cosine_algorithm(sequence_pairs, num_particles=3, num_iterations=10, a=2, adapt=True):
     """
     Sine-Cosine Algorithm (SCA) for sequence alignment using predefined sequence pairs.
 
     Args:
         sequence_pairs (list): List of sequence pairs as dictionaries {"seq1": str, "seq2": str}.
-        num_particles (int): Number of particles (pairs) per iteration.
+        num_particles (int): Initial number of particles (pairs) per iteration.
         num_iterations (int): Number of iterations for the optimization.
         a (float): Constant factor controlling exploration.
+        adapt (bool): Enable adaptive adjustment of the number of particles.
 
     Returns:
         iteration_scores (list): Scores for each iteration.
@@ -34,12 +35,19 @@ def sine_cosine_algorithm(sequence_pairs, num_particles=2, num_iterations=10, a=
     global_best_pair = (None, None)
     global_best_alignment = (None, None)
 
-    # Initialize particles (random indices of sequence pairs)
-    particle_indices = np.random.choice(range(total_pairs), num_particles, replace=False)
-
     for t in range(num_iterations):
         start_time = time.time()
-        logger.info(f"Starting SCA iteration {t + 1}...")
+        logger.info(f"Starting SCA iteration {t + 1} with {num_particles} particles...")
+
+        # Adjust particles dynamically based on global best score trend
+        if adapt:
+            if global_best_score > 0:
+                if global_best_score > np.mean(iteration_scores[-3:]):  # Exploitation phase
+                    num_particles = min(num_particles + 1, total_pairs)
+                else:  # Exploration phase
+                    num_particles = max(num_particles - 1, 3)
+
+        particle_indices = np.random.choice(range(total_pairs), num_particles, replace=False)
 
         exploration_factor = a - (t / num_iterations) * a
         iteration_best_score = -np.inf
@@ -84,8 +92,6 @@ def sine_cosine_algorithm(sequence_pairs, num_particles=2, num_iterations=10, a=
         iteration_scores.append(iteration_best_score if iteration_best_score > -np.inf else 0)
 
         logger.info(f"Iteration {t + 1} completed in {iteration_time:.2f} seconds with best score: {iteration_best_score}")
-
-        particle_indices = np.random.choice(range(total_pairs), num_particles, replace=False)
 
     if global_best_score == -np.inf:
         logger.warning("No valid alignment score was computed. Returning default values.")

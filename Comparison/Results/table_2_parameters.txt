@@ -1,0 +1,21 @@
+Algorithm                  Parameter         Value
+       SW                Gap Penalty          -1.0
+       SW                Match Score           2.0
+       SW           Mismatch Penalty          -1.0
+      PSO         Inertia Weight (w)           0.9
+      PSO Cognitive Coefficient (c1)           1.5
+      PSO    Social Coefficient (c2)           1.5
+ ASCA-PSO         Inertia Weight (w)           0.9
+ ASCA-PSO Cognitive Coefficient (c1)           1.5
+ ASCA-PSO    Social Coefficient (c2)           1.5
+ ASCA-PSO     Exploration Factor (a)           2.0
+ ASCA-PSO                         r2 random(0, 2π)
+ ASCA-PSO                         r3  random(0, 1)
+ ASCA-PSO                         r4  random(0, 1)
+      SCA                          a           2.0
+      SCA                         r1          10.0
+      SCA                         r2 random(0, 2π)
+      SCA                         r3  random(0, 1)
+      SCA                         r4  random(0, 1)
+     FLAT            Fragment Length      variable
+     FLAT         Maximum Iterations            10

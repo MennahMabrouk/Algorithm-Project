@@ -1,0 +1,21 @@
+Name                                                               Formula
+  F1 -20 * exp(-0.2 * sqrt(sum(x^2)/d)) - exp(sum(cos(2*pi*x))/d) + 20 + e
+  F2                                      10*d + sum(x^2 - 10*cos(2*pi*x))
+  F3                              sum(x^2)/4000 - prod(cos(x/sqrt(i))) + 1
+  F4                                                            sum(i*x^4)
+  F5                                                              sum(x^2)
+  F6                                                      sum((x + 0.5)^2)
+  F7            -1 - cos(12 * sqrt(x1^2 + x2^2)) / (0.5*(x1^2 + x2^2) + 2)
+  F8        0.5 + (sin(x1^2 - x2^2)^2 - 0.5) / (1 + 0.001*(x1^2 + x2^2))^2
+  F9                                                 sum(i * sum(x[:i])^2)
+ F10                           (x1 - 1)^2 + sum(i * (2*x[i]^2 - x[i-1])^2)
+ F11                                                      sum(x) + prod(x)
+ F12                4*x1^2 - 2.1*x1^4 + (x1^6)/3 + x1*x2 + 4*x2^2 - 4*x2^4
+ F13                                                              max(|x|)
+ F14                                               sum(|x*sin(x) + 0.1*x|)
+ F15                                    sum(sin(x) * (sin(i * x^2/pi)^20))
+ F16                                   complicated multi-variable function
+ F17                                       another multi-variable function
+ F18                                                            sum(x^2)^2
+ F19                                          sum(|x|)*exp(-sum(sin(x^2)))
+ F20          sum(sin^2(x)) - exp(-sum(x^2)) + exp(-sum(sin(sqrt(|x|))^2))

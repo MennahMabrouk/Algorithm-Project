@@ -20,6 +20,7 @@ SEQUENCE_FILE = os.path.join(BASE_DIR, "Dataset", "protein_combinations.json")
 RESULT_FILE_TEMPLATE = os.path.join(
     BASE_DIR, "Results", "combined_algorithms_results_{num_iterations}.json"
 )
+num_iterations = 50
 
 def load_sequence_pairs(max_pairs=None):
     """
@@ -50,17 +51,21 @@ def update_json_file(result_file, algorithm_name, iteration_data):
     Update the JSON file with results from the current iteration.
     """
     try:
+        # Load existing results or initialize a new structure
         if os.path.exists(result_file):
             with open(result_file, "r") as file:
                 results = json.load(file)
         else:
             results = {}
 
+        # Initialize the algorithm's result list if not present
         if algorithm_name not in results:
             results[algorithm_name] = []
 
+        # Append the current iteration data
         results[algorithm_name].append(iteration_data)
 
+        # Write back to the JSON file
         with open(result_file, "w") as file:
             json.dump(results, file, indent=4)
         logger.info(f"Updated {result_file} with {algorithm_name} data: {iteration_data}")
@@ -85,6 +90,7 @@ def run_asca_pso(result_file, sequence_pairs, num_groups=3, group_size=5, asca_i
             pairs = load_sequence_pairs(max_pairs=len(sequence_pairs))
             logger.info(f"ASCA-PSO Iteration {i + 1} started with {num_groups} groups and {group_size} agents per group.")
 
+            # Run ASCA-PSO for the current iteration
             global_best_score, global_best_alignment, total_time = asca_pso(
                 pairs,
                 num_groups=num_groups,
@@ -92,15 +98,17 @@ def run_asca_pso(result_file, sequence_pairs, num_groups=3, group_size=5, asca_i
                 num_iterations=asca_iterations
             )
 
+            # Validate global_best_alignment
             if not global_best_alignment or len(global_best_alignment) != 2:
                 raise ValueError("Invalid alignment format from ASCA-PSO.")
 
             align1, align2 = global_best_alignment["align1"], global_best_alignment["align2"]
 
+            # Prepare and save iteration data
             iteration_data = {
-                "score": float(global_best_score),
-                "alignment": {"align1": align1, "align2": align2},
-                "time": float(total_time)
+                "score": float(global_best_score),  # Ensure it's serializable
+                "alignment": {"align1": align1, "align2": align2},  # Use actual alignments
+                "time": float(total_time)  # Ensure it's serializable
             }
             update_json_file(result_file, "ASCA-PSO", iteration_data)
 
@@ -108,11 +116,11 @@ def run_asca_pso(result_file, sequence_pairs, num_groups=3, group_size=5, asca_i
 
         except ValueError as ve:
             logger.error(f"Error in ASCA-PSO Iteration {i + 1}: {ve}")
-            continue
+            continue  # Skip this iteration if there's a value error
 
         except Exception as e:
             logger.error(f"Unexpected error in ASCA-PSO Iteration {i + 1}: {e}")
-            continue
+            continue  # Proceed to the next iteration even if one fails
 
     logger.info("ASCA-PSO completed all iterations successfully.")
 
@@ -255,6 +263,7 @@ def run_sca(result_file, sequence_pairs, num_particles=3, sca_iterations=5, adap
                 logger.warning(f"Number of particles adjusted to the minimum of 3 for SCA Iteration {i + 1}.")
                 num_particles = 3
 
+            # Prepare sequence pairs for the algorithm
             selected_pairs = pairs[:num_particles]
 
             logger.info(f"Running SCA Iteration {i + 1} with {len(selected_pairs)} pairs.")
@@ -268,7 +277,7 @@ def run_sca(result_file, sequence_pairs, num_particles=3, sca_iterations=5, adap
                 if global_best_score > 0:
                     if global_best_score > np.mean(iteration_scores[-3:]):
                         num_particles = min(num_particles + 1, len(pairs))
-                    else:
+                    else:  # Exploration phase
                         num_particles = max(num_particles - 1, 3)
 
             best_score = max(iteration_scores)
@@ -287,20 +296,12 @@ def run_sca(result_file, sequence_pairs, num_particles=3, sca_iterations=5, adap
 
 if __name__ == "__main__":
     sequence_pairs = load_sequence_pairs()
-    iteration_counts = [10, 50, 100, 200, 300, 400, 500, 600]
+    result_file = initialize_results_file()
 
-    for num_iterations in iteration_counts:
-        logger.info(f"Starting sequence alignment experiments for {num_iterations} iterations...")
-        result_file = RESULT_FILE_TEMPLATE.format(num_iterations=num_iterations)
-        initialize_results_file()
-
-        run_pairwise_algorithm(result_file, "Smith-Waterman", smith_waterman, sequence_pairs)
-        run_flat(result_file, sequence_pairs, fragment_length=20, flat_iterations=num_iterations)
-        run_pso(result_file, sequence_pairs, num_particles=3, pso_iterations=num_iterations)
-        run_sca(result_file, sequence_pairs, num_particles=3, sca_iterations=num_iterations)
-        run_asca_pso(result_file, sequence_pairs, num_groups=3, group_size=5, asca_iterations=num_iterations)
-
-        logger.info(f"Completed sequence alignment experiments for {num_iterations} iterations.")
-
+    logger.info("Starting sequence alignment experiments...")
+    run_pairwise_algorithm(result_file, "Smith-Waterman", smith_waterman, sequence_pairs)
+    run_flat(result_file, sequence_pairs, fragment_length=20, flat_iterations=5)
+    run_pso(result_file, sequence_pairs, num_particles=3, pso_iterations=5)
+    run_sca(result_file, sequence_pairs, num_particles=3, sca_iterations=5)
+    run_asca_pso(result_file, sequence_pairs, num_groups=3, group_size=5, asca_iterations=5)
     logger.info("All sequence alignment experiments completed successfully.")
-
